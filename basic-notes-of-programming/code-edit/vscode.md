@@ -4,7 +4,7 @@
 
 这里首先介绍一个用户非常多，插件非常丰富的代码编辑器：[Visual Studio Code](https://code.visualstudio.com/)，一般简称`vscode`。先去上述网站下载安装一下吧，推荐安装的时候把所有的选项全都勾上。
 
-如果你对于vscode不感兴趣，可以直接看下一篇[代码编辑器概述](https://zhuanlan.zhihu.com/p/386481667)。
+如果你对于vscode不感兴趣，可以直接看下一篇[代码编辑器概述](editor.md)。
 
 ## vscode基本界面
 
