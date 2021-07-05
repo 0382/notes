@@ -7,8 +7,10 @@
    - [【编程基础知识（二）】 文件类型和编辑器](learn-about-computer/notepad.md)
    - [【编程基础知识（三）】 命令行](learn-about-computer/cmd.md)
 2. 代码编辑
-   - 施工中...
-
+   - [【代码编辑（一）】Visual Studio Code](code-edit/vscode.md)
+   - [【代码编辑（二）】代码编辑器概述](code-edit/editor.md)
+   - [【代码编辑（三）】文字编码](code-edit/encode.md)
+   - 施工中
 ## 引言
 
 国内物理学方向的本科生基本只学过c/c++和数据结构与算法这两门与计算机有关的课，部分人还上过计算物理，写代码的实践总体是很少的。但是这样的一个学生进入课题组之后，立刻就要他开始干活。实验方向还好，开一个`jupyter`就能够愉快的开始写代码了。但是计算方向，一般都是师兄教你下一个`xshell`或者`mobaxterm`，然后连到服务器上，用完全没有配置的`vim`开始写代码，还要你学会编译器和`make`的使用。
