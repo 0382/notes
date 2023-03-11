@@ -162,6 +162,89 @@ $$
 
 而且你还是可以用三对角矩阵$T_{mm}$求解，因为其他那些数值误差带来的矩阵元是很小的。正如我们所说，假态不是单纯的随机数值误差造成的，而是Lanczos算法太有效造成的。完全正交化保证了数值上的正交性，就不会重新投影出假态了。
 
+### 示例代码
+
+```julia
+using SparseArrays
+using LinearAlgebra
+
+"""
+    Lanczos(A::AbstractMatrix, num::Int = 10)
+其中`A`是待求解的矩阵，`num`是需要获得特征值的数目，默认为`10`.
+"""
+function Lanczos(A::AbstractMatrix, num::Int=10, maxiter=size(A, 1))
+    @assert size(A, 1) == size(A, 2) "A should be square"
+    @assert num < size(A, 1) / 2 "Lanczos cannot give too many eigen values"
+    Asize = size(A, 1)
+    T = float(eltype(A))
+    eigen_values = zeros(T, num)
+    eigen_vectors = zeros(T, Asize, num)
+    α = T[]
+    β = T[]
+    V_list = Vector{Vector{T}}()
+    # initial guess
+    vk = rand(T, Asize)
+    normalize!(vk)
+
+    wk = A * vk
+    ak = dot(wk, vk)
+    push!(α, ak)
+    push!(V_list, copy(vk))
+    prev_eigen_value = typemax(T)
+    k = 1
+    while k < maxiter
+        # orthogonalize
+        if k == 1
+            @. wk = wk - ak * vk
+        else
+            for i = k:-1:1
+                ovlp = dot(wk, V_list[i])
+                @. wk = wk - ovlp * V_list[i]
+            end
+        end
+        k += 1
+        bk = norm(wk)
+        @. vk = wk / bk
+        mul!(wk, A, vk)
+        ak = dot(wk, vk)
+        push!(α, ak)
+        push!(β, bk)
+        push!(V_list, copy(vk))
+
+        # solve symtridiagonal
+        Tkk = SymTridiagonal(α, β)
+        vals, vecs = eigen(Tkk, 1:min(k, num))
+        if k >= num
+            if prev_eigen_value ≈ vals[end]
+                eigen_values = vals
+                eigen_vectors = hcat(V_list...) * vecs
+                break
+            else
+                prev_eigen_value = vals[end]
+            end
+        end
+    end
+    if k >= maxiter
+        @warn "not convereged after $k iterations"
+    end
+    return Eigen(eigen_values, eigen_vectors), k
+end
+
+function test_Lanczos(N::Int, nums::Int)
+    A = sprandn(N, N, 1 / N)
+    A = A + A'
+    (vals, vecs), k = Lanczos(A, nums)
+    println("convereged after $k iterations")
+    println("first $nums eigen values = ", vals)
+    println("first $nums eigen vectors residual norm = ")
+    for i = 1:length(vals)
+        println(norm(A * vecs[:, i] - vals[i] * vecs[:, i]))
+    end
+end
+
+test_Lanczos(100, 10)
+```
+
 ### 参考文献
 
 - 刘川 《计算物理导论》
